@@ -2,7 +2,14 @@ const api="https://test-data-gules.vercel.app/data.json";
 let questions=0;
 let completed=0;
 let bookmarks=[];
+
+  
+
 async function fetching(searching){
+    if (searching.trim() === '') {
+        alert('Enter a valid search term');
+        return; 
+    }
     try{
 
         const response= await fetch(api);
@@ -97,6 +104,10 @@ function handlesearch(){
     const query=searchbar.value;
     fetching(query);
 }
+function handlesearch2(f){
+    
+    fetching2('',f);
+}
 function  progressbar(){
    const bar=document.getElementById('progressbar');
    const p=(completed/questions)*100;
@@ -127,3 +138,14 @@ function bookmarkp(){
 }
 document.getElementById('search').addEventListener('click',handlesearch);
 document.getElementById('bookmarkbtn').addEventListener('click',bookmarkp);
+document.getElementById('dk').addEventListener('click',function(){
+    var element = document.body;
+
+  element.classList.toggle("dark-mode");
+})
+let f=0;
+document.getElementById('topics').addEventListener('click',function(){
+    if(f==1){f=0};
+    if(f==0){f=1};
+    handlesearch2(f);
+});

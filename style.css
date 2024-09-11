@@ -7,8 +7,10 @@
 body{font-family: 'Poppins', sans-serif;
 
 }
-.body{
-    
+
+.dark-mode{
+    background-color: black;
+    color: azure;
 }
 .h{
     text-align: center;
@@ -32,6 +34,23 @@ body{font-family: 'Poppins', sans-serif;
     border-radius: 0px 5px 5px 0;
     height: 33px;
     font-size: 18px;
+}
+#topics{
+    background-color: rgb(99, 3, 99);
+    color: whitesmoke;
+    border-radius: 5px 5px 5px 5px;
+    height: 33px;
+    font-size: 18px;
+    margin-right: 5px;
+}
+#dk{
+    background-color: rgb(99, 3, 99);
+    color: whitesmoke;
+    border-radius: 5px 5px 5px 5px;
+    height: 33px;
+    font-size: 18px;
+    float: right;
+    margin-left: 3px;
 }
 #search_bar{
     border-radius: 2px;
@@ -63,10 +82,11 @@ body{font-family: 'Poppins', sans-serif;
     line-height: 30px;
     border-radius: 8px;
     font-size: 18px;
+    overflow: hidden;
 }
 .newdivclass{
     cursor: pointer;
-    width: 600px;
+    width: auto;
     padding: 10px;
     text-align: left;
     border: 1px solid whitesmoke;
@@ -81,6 +101,19 @@ body{font-family: 'Poppins', sans-serif;
     background-color: rgb(99, 3, 99);
     font-size: 18px;
 
+}
+.new{
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease;
+    /* padding: 10px; */
+    display: flex;
+    height: auto;
+    border: 1px solid whitesmoke;
+    border-top: none;
+    border-radius: 0 0 5px,5px;
+    background-color: rgb(155, 130, 180);
+    font-size: 18px;
 }
 .panel{
     overflow: hidden;
