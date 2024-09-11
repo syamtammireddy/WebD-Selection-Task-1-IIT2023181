@@ -4,17 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quest Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Quest Hub</h1>
+    <header>
+    <h1 class="h">Quest Hub</h1>
   </header>
-    <main>
-        <div id="c1">
-
-        </div>
-    </main>
+  <main>
+    <div class="component1">
+    <input type="text" id="search_bar" placeholder="Basics,recursion,linkedlist..">
+    <button id="search">search</button>
+  </div>
+  <ol id="questionsl"></ol>
+  <div class="progress">
+    <div id="progressbar">
+      0% Completed
+    </div>
+  </div>
+ 
+  </main>
+  <footer>
+    <div class="bookmarksclass">
+      <h4>Book Marked Questions</h4>
+      <button id="bookmarkbtn">Show Bookmarks</button>
+      <ol id="bookmarklist"></ol>
+    </div>
+  </footer>
+    
     <script src="script.js"></script>
 </body>
 </html>

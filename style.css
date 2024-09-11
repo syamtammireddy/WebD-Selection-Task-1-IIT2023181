@@ -1,19 +1,156 @@
-body{
-    margin: 0;
+*{
     padding: 0;
-    background-color: whitesmoke;
+    margin: 0;
+    
+
 }
-header{
+body{font-family: 'Poppins', sans-serif;
+
+}
+.body{
+    
+}
+.h{
     text-align: center;
+   text-align: center;
     padding: 10px;
-    background-color: green;
-    color: white;
+    background-color: rgb(99, 3, 99);
+    color: whitesmoke;
+    height: fit-content;
 }
-main{
+.component1{
+    display: flex;
+    margin-top: 10px;
+    padding: 5px;
+    justify-content: center;
+    font-size: 18px;
+    
+}
+#search{
+    background-color: rgb(99, 3, 99);
+    color: whitesmoke;
+    border-radius: 0px 5px 5px 0;
+    height: 33px;
+    font-size: 18px;
+}
+#search_bar{
+    border-radius: 2px;
+    height: 30px;
+    width: 270px;
+    border-radius: 5px  0 0 5px;
+    font-size: 18px;
+}
+#bookmarksbtn{
+    background-color: rgb(99, 3, 99);
+    color: whitesmoke;
+    border-radius: 2px;
+    height: 34px;
+    font-size: 18px;
+}
+.progress{
+    width: 100%;
+    background-color: rgb(234, 172, 234);
+    border-radius: 5px;
+    height: 30px;
+    font-size: 18px;
+}
+#progressbar{
+    width: 0%;
+    height: 30px;
+    background-color: rgb(99, 3, 99);
+    text-align: center;
+    color: whitesmoke;
+    line-height: 30px;
+    border-radius: 8px;
+    font-size: 18px;
+}
+.newdivclass{
+    cursor: pointer;
+    width: 600px;
     padding: 10px;
-    max-width: 800px;
-    margin: 0 auto;
+    text-align: left;
+    border: 1px solid whitesmoke;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    color: whitesmoke;
+    background-color: rgb(164, 19, 164);
+      transition: background-color 0.3s ease;
+      font-size: 18px;
 }
-#c1{
-  margin-top: 10px;
+.newdivclass.active,.newdivclass:hover{
+    background-color: rgb(99, 3, 99);
+    font-size: 18px;
+
+}
+.panel{
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease;
+    /* padding: 10px; */
+    display: flex;
+    height: auto;
+    border: 1px solid whitesmoke;
+    border-top: none;
+    border-radius: 0 0 5px,5px;
+    background-color: rgb(155, 130, 180);
+    font-size: 18px;
+}
+.panel.open{
+    max-height: 1000px;
+    display: flex;
+    font-size: 18px;
+}
+.link{
+    color: rgb(99, 3, 99);
+    background-color: transparent;
+    text-decoration: none;
+    
+    font-size: 18px;
+}
+.btn{
+    background-color: rgb(155, 130, 180);
+    border: 0ch;
+    margin-left: 20px;
+    font-size: 18px;
+}
+.flexing{
+    display: flex;
+    
+    justify-content: space-between;
+    font-size: 18px;
+}
+.nlink{
+    color: rgb(99, 3, 99);
+    background-color: transparent;
+    text-decoration: none;
+    
+    font-size: 18px;
+
+
+}
+#bookmarklist{
+    overflow: hidden;
+    
+    transition: max-height 0.5s ease;
+    border: 1px solid whitesmoke;
+    border-top: none;
+    border-radius: 0 0 5px,5px;
+    background-color: rgb(155, 130, 180);
+    font-size: 18px;
+}
+.set{
+    display: flex;
+    font-size: 18px;
+    
+}
+#bookmarkbtn{
+    background-color: rgb(99, 3, 99);
+    color: whitesmoke;
+    border-radius: 5px 5px 5px 5px;
+    height: 33px;
+    font-size: 18px;
+    margin: 10px;
+}
+#bookmarklist{
+    margin-bottom: 10px;
 }
