@@ -143,9 +143,34 @@ document.getElementById('dk').addEventListener('click',function(){
 
   element.classList.toggle("dark-mode");
 })
-let f=0;
-document.getElementById('topics').addEventListener('click',function(){
-    if(f==1){f=0};
-    if(f==0){f=1};
-    handlesearch2(f);
-});
+
+window.onload= async function(){
+        searching='';
+        try {
+            const response = await fetch(api);
+            const result = await response.json();
+    
+            if (result.status) {
+                const matched = [];
+                
+    
+                result.data.forEach(obj => {
+                    if (obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())) {
+                        matched.push(obj);
+                         
+                    }
+                });
+                const xx=document.getElementsByClassName("dropdown-content")[0];
+                matched.forEach(obj => {
+                    const p = document.createElement('p');
+                    p.innerHTML = obj.title;               
+                    xx.appendChild(p);         
+                });
+                
+    
+                console.log('Matched Questions:', matched); 
+            }
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    }
