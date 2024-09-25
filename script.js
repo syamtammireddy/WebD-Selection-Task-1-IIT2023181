@@ -18,6 +18,16 @@ async function fetching(searching){
     if(result.status){
         const matched=[];
         questions=0;
+        let a='';
+        result.data.forEach(obj => {
+            if (obj.title && obj.title.toLowerCase().includes(a.toLowerCase())) {
+                 questions+=(obj.ques.length);
+                //  console.log(questions);
+                
+                 
+            }
+        });
+        
          
         result.data.forEach(obj=>{
             if(obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())){
@@ -37,7 +47,7 @@ async function fetching(searching){
             panel.className='panel';
             
             obj.ques.forEach((q,index)=>{
-                 questions++;
+                 
             
             const questionlist=document.createElement('div');
             questionlist.innerHTML = `
@@ -145,6 +155,7 @@ document.getElementById('dk').addEventListener('click',function(){
 })
 
 window.onload= async function(){
+    
         searching='';
         try {
             const response = await fetch(api);
@@ -156,6 +167,8 @@ window.onload= async function(){
     
                 result.data.forEach(obj => {
                     if (obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())) {
+                         questions+=(obj.ques.length);
+                        
                         matched.push(obj);
                          
                     }
@@ -168,7 +181,8 @@ window.onload= async function(){
                 });
                 
     
-                console.log('Matched Questions:', matched); 
+                // console.log('Matched Questions:', matched); 
+                console.log(questions);
             }
         } catch (error) {
             console.log('Error:', error);
