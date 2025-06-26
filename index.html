@@ -1,45 +1,77 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quest Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
+    <title>Quest Hub - Coding Practice Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-    <h1 class="h">Quest Hub</h1>
-  </header>
-  <main>
-    <div class="component1">
-      <div class="dropdown">
-        <span id="rk" style="width: 50px;">Topics</span>
-        <div class="dropdown-content">
-
+    <header class="header">
+        <div class="container">
+            <h1 class="logo"><i class="fas fa-code"></i> Quest Hub</h1>
+            <p class="tagline">Master coding concepts one question at a time</p>
         </div>
-      </div>
-    <input type="text" id="search_bar" placeholder="Basics,recursion,linkedlist..">
-    <button id="search">search</button>
-    <button id="dk">Dark Mode</button>
-  </div>
-  <ol id="tlists"></ol>
-  <ol id="questionsl"></ol>
-  <div class="progress" style="margin-bottom: 20px;">
-    <div id="progressbar">
-      
-    </div>
-  </div>
- 
-  </main>
-  <footer>
-    <div class="bookmarksclass">
-      <h4>Book Marked Questions</h4>
-      <button id="bookmarkbtn">Show Bookmarks</button>
-      <ol id="bookmarklist"></ol>
-    </div>
-  </footer>
+    </header>
+    
+    <main class="main container">
+        <section class="search-section">
+            <div class="search-container">
+                <div class="dropdown">
+                    <button class="dropdown-btn"><i class="fas fa-book-open"></i> Topics <i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-content"></div>
+                    </div>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="search_bar" placeholder="Search topics: Arrays, Recursion, OOP...">
+                    <button id="search" class="search-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+                
+                <button id="dk" class="theme-toggle">
+                    <span class="dark-icon"><i class="fas fa-moon"></i> Dark</span>
+                    <span class="light-icon"><i class="fas fa-sun"></i> Light</span>
+                </button>
+            </div>
+        </section>
+        
+        <section class="progress-section">
+            <div class="progress-info">
+                <span id="progress-text">0% Completed</span>
+                <span id="progress-count">0/0 questions</span>
+            </div>
+            <div class="progress">
+                <div id="progressbar"></div>
+            </div>
+        </section>
+        
+        <section class="content-section">
+            <ol id="tlists" class="topic-list"></ol>
+            <ol id="questionsl" class="questions-container"></ol>
+        </section>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="bookmarks-section">
+                <div class="bookmarks-header">
+                    <h3><i class="fas fa-bookmark"></i> Bookmarks</h3>
+                    <button id="bookmarkbtn" class="bookmarks-toggle">
+                        <span class="show-text">Show Bookmarks</span>
+                        <span class="hide-text">Hide Bookmarks</span>
+                    </button>
+                </div>
+                <ol id="bookmarklist" class="bookmarks-list"></ol>
+            </div>
+            <div class="footer-info">
+                <p>© 2023 Quest Hub | Practice makes perfect!</p>
+            </div>
+        </div>
+    </footer>
     
     <script src="script.js"></script>
 </body>
