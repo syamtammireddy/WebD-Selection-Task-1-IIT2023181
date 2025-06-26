@@ -1,190 +1,349 @@
-const api="https://test-data-gules.vercel.app/data.json";
-let questions=0;
-let completed=0;
-let bookmarks=[];
+const api = "https://test-data-gules.vercel.app/data.json";
+let questions = 0;
+let completed = 0;
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+let darkMode = localStorage.getItem('darkMode') === 'true';
 
-  
+// DOM Elements
+const searchInput = document.getElementById('search_bar');
+const searchBtn = document.getElementById('search');
+const themeToggle = document.getElementById('dk');
+const progressBar = document.getElementById('progressbar');
+const progressText = document.getElementById('progress-text');
+const progressCount = document.getElementById('progress-count');
+const questionsList = document.getElementById('questionsl');
+const bookmarksBtn = document.getElementById('bookmarkbtn');
+const bookmarksList = document.getElementById('bookmarklist');
+const dropdownContent = document.querySelector('.dropdown-content');
 
-async function fetching(searching){
-    if (searching.trim() === '') {
-        alert('Enter a valid search term');
-        return; 
+// Initialize the app
+document.addEventListener('DOMContentLoaded', () => {
+    // Set dark mode if enabled
+    if (darkMode) {
+        document.body.classList.add('dark-mode');
     }
-    try{
+    
+    // Load popular topics into dropdown
+    loadPopularTopics();
+    
+    // Load bookmarks from localStorage
+    renderBookmarks();
+    
+    // Set up event listeners
+    setupEventListeners();
+    
+    // Update progress bar
+    updateProgress();
+});
 
-        const response= await fetch(api);
+function setupEventListeners() {
+    // Search functionality
+    searchBtn.addEventListener('click', () => fetching(searchInput.value));
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') fetching(searchInput.value);
+    });
+    
+    // Theme toggle
+    themeToggle.addEventListener('click', toggleDarkMode);
+    
+    // Bookmarks toggle
+    bookmarksBtn.addEventListener('click', toggleBookmarks);
+    
+    // Load sample data on initial load
+    fetching('basics');
+}
+
+async function loadPopularTopics() {
+    try {
+        const response = await fetch(api);
         const result = await response.json();
-    
-    if(result.status){
-        const matched=[];
-        questions=0;
-        let a='';
-        result.data.forEach(obj => {
-            if (obj.title && obj.title.toLowerCase().includes(a.toLowerCase())) {
-                 questions+=(obj.ques.length);
-                //  console.log(questions);
-                
-                 
-            }
-        });
         
-         
-        result.data.forEach(obj=>{
-            if(obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())){
-                matched.push(obj);
-            }
-        });
+        if (result.status) {
+            // Get all unique topics
+            const topics = result.data.map(item => item.title);
+            
+            // Add topics to dropdown
+            topics.forEach(topic => {
+                const topicItem = document.createElement('div');
+                topicItem.className = 'dropdown-item';
+                topicItem.textContent = topic;
+                topicItem.addEventListener('click', () => {
+                    searchInput.value = topic;
+                    fetching(topic);
+                });
+                dropdownContent.appendChild(topicItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading topics:', error);
+    }
+}
+
+async function fetching(searching) {
+    if (searching.trim() === '') {
+        showAlert('Please enter a search term', 'error');
+        return;
+    }
     
-    const list=document.getElementById('questionsl');
-    list.innerHTML='';
-    if(matched.length>0){
-        matched.forEach(obj=>{
-            const newdiv=document.createElement('div');
-            newdiv.className='newdivclass';
-            newdiv.textContent=obj.title;
-            list.appendChild(newdiv);
-            const panel=document.createElement('div');
-            panel.className='panel';
+    try {
+        const response = await fetch(api);
+        const result = await response.json();
+        
+        if (result.status) {
+            questions = 0;
+            completed = 0;
             
-            obj.ques.forEach((q,index)=>{
-                 
+            // Calculate total questions for progress
+            result.data.forEach(obj => {
+                if (obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())) {
+                    questions += obj.ques.length;
+                }
+            });
             
-            const questionlist=document.createElement('div');
-            questionlist.innerHTML = `
-            <div class="flexing">
-              <div class="set">
-                <input type="checkbox" id="check-${index}" onclick="marked(${index})" >
-                <div><a class="nlink" href="${q.p1_link}" target="_blank">${q.title}</a></div> </div> <div class="set">
-                <div><a class="link" href="${q.yt_link}" target="_blank">Watch Video</a></div>
-                <div ><button class="btn" onclick="bookmarked('${q.title}','${q.yt_link}','${q.p1__link}')">📑</button></div></div>
+            // Filter matched topics
+            const matched = result.data.filter(obj => 
+                obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())
+            );
+            
+            // Clear previous results
+            questionsList.innerHTML = '';
+            
+            if (matched.length > 0) {
+                matched.forEach(obj => {
+                    const topicItem = document.createElement('li');
+                    topicItem.className = 'topic-item';
+                    
+                    const topicHeader = document.createElement('div');
+                    topicHeader.className = 'topic-header';
+                    topicHeader.innerHTML = `
+                        <span>${obj.title}</span>
+                        <i class="fas fa-chevron-down topic-icon"></i>
+                    `;
+                    
+                    const questionPanel = document.createElement('div');
+                    questionPanel.className = 'question-panel';
+                    
+                    obj.ques.forEach((q, index) => {
+                        const isBookmarked = bookmarks.some(b => b.title === q.title);
+                        const isCompleted = localStorage.getItem(`completed-${q.title}`) === 'true';
+                        
+                        if (isCompleted) completed++;
+                        
+                        const questionItem = document.createElement('div');
+                        questionItem.className = `question-item ${isCompleted ? 'completed' : ''}`;
+                        questionItem.innerHTML = `
+                            <div class="question-content">
+                                <input type="checkbox" class="question-checkbox" 
+                                    id="check-${index}" ${isCompleted ? 'checked' : ''}
+                                    data-title="${q.title}">
+                                <a href="${q.p1_link}" target="_blank" class="question-link question-title">
+                                    ${q.title}
+                                </a>
+                            </div>
+                            <div class="question-actions">
+                                <a href="${q.yt_link}" target="_blank" class="action-btn" title="Watch Video">
+                                    <i class="fas fa-video"></i>
+                                </a>
+                                <button class="action-btn bookmark-btn" title="Bookmark" data-title="${q.title}" 
+                                    data-yt="${q.yt_link}" data-link="${q.p1_link}">
+                                    <i class="fas ${isBookmarked ? 'fa-bookmark' : 'fa-bookmark-o'}"></i>
+                                </button>
+                            </div>
+                        `;
+                        
+                        questionPanel.appendChild(questionItem);
+                    });
+                    
+                    topicItem.appendChild(topicHeader);
+                    topicItem.appendChild(questionPanel);
+                    questionsList.appendChild(topicItem);
+                    
+                    // Add click event to toggle topic
+                    topicHeader.addEventListener('click', () => {
+                        topicItem.classList.toggle('active');
+                    });
+                });
+                
+                // Add event listeners to checkboxes and bookmark buttons
+                addQuestionEventListeners();
+            } else {
+                questionsList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <p>No topics found matching "${searching}"</p>
+                    </div>
+                `;
+            }
+            
+            updateProgress();
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        showAlert('Failed to load data. Please try again later.', 'error');
+    }
+}
+
+function addQuestionEventListeners() {
+    // Checkbox event listeners
+    document.querySelectorAll('.question-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const questionItem = this.closest('.question-item');
+            const title = this.dataset.title;
+            
+            if (this.checked) {
+                questionItem.classList.add('completed');
+                localStorage.setItem(`completed-${title}`, 'true');
+                completed++;
+            } else {
+                questionItem.classList.remove('completed');
+                localStorage.removeItem(`completed-${title}`);
+                completed--;
+            }
+            
+            updateProgress();
+        });
+    });
+    
+    // Bookmark event listeners
+    document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const title = this.dataset.title;
+            const ytLink = this.dataset.yt;
+            const p1Link = this.dataset.link;
+            
+            toggleBookmark(title, ytLink, p1Link, this);
+        });
+    });
+}
+
+function toggleBookmark(title, ytLink, p1Link, button) {
+    const bookmarkIndex = bookmarks.findIndex(b => b.title === title);
+    
+    if (bookmarkIndex === -1) {
+        // Add bookmark
+        bookmarks.push({ title, yt_link: ytLink, p1_link: p1Link });
+        if (button) {
+            button.innerHTML = '<i class="fas fa-bookmark"></i>';
+        }
+        showAlert('Question bookmarked!', 'success');
+    } else {
+        // Remove bookmark
+        bookmarks.splice(bookmarkIndex, 1);
+        if (button) {
+            button.innerHTML = '<i class="fas fa-bookmark-o"></i>';
+        }
+        showAlert('Bookmark removed', 'info');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    
+    // Update bookmarks list
+    renderBookmarks();
+}
+
+function renderBookmarks() {
+    bookmarksList.innerHTML = '';
+    
+    if (bookmarks.length === 0) {
+        bookmarksList.innerHTML = `
+            <div class="no-bookmarks">
+                <i class="fas fa-bookmark"></i>
+                <p>No bookmarks yet. Click the bookmark icon to save questions.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    bookmarks.forEach((bookmark, index) => {
+        const bookmarkItem = document.createElement('li');
+        bookmarkItem.className = 'bookmark-item';
+        bookmarkItem.innerHTML = `
+            <a href="${bookmark.p1_link}" target="_blank" class="question-link">
+                ${bookmark.title}
+            </a>
+            <div class="bookmark-actions">
+                <a href="${bookmark.yt_link}" target="_blank" class="action-btn" title="Watch Video">
+                    <i class="fas fa-video"></i>
+                </a>
+                <button class="action-btn remove-bookmark" title="Remove Bookmark" data-index="${index}">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
         `;
         
-            questionlist.setAttribute('id',`question-${index}`);
-            panel.appendChild(questionlist);
-        });
-           list.appendChild(panel);
-           newdiv.addEventListener('click',function(){
-            this.classList.toggle('active');
-            const panel=this.nextElementSibling;
-            if (panel.classList.contains('open')) {
-                panel.classList.remove('open');
-                panel.classList.add('close');
-              } else {
-                panel.classList.remove('close');
-                panel.classList.add('open');
-              }
-            if(panel.style.display ==="block"){
-                panel.style.display="none";
-            }
-            else{
-                panel.style.display ="block";
-            }
-           })
-        });
-    }else{
-        list.innerHTML=`<div>No sections found eith given category</div>`
-    }
-}progressbar();
-}
-    
-   catch(error){
-    console.log('err',error);
-}
-  
-  
-}
-function marked(index) {
-    const chkbox=document.getElementById(`check-${index}`);
-    const item=document.getElementById(`question-${index}`);
-    if(chkbox.checked){
-        item.style.backgroundColor = 'lightgreen';
-        item.style.color = 'white';
-    completed++;
-    }
-    else {
-        item.style.backgroundColor = '';
-        completed--;
-        item.style.color = ''
-      }
-      progressbar();
-  }
-function handlesearch(){
-    const searchbar=document.getElementById('search_bar');
-    const query=searchbar.value;
-    fetching(query);
-}
-function handlesearch2(f){
-    
-    fetching2('',f);
-}
-function  progressbar(){
-   const bar=document.getElementById('progressbar');
-   const p=(completed/questions)*100;
-   bar.style.width=`${p}%`;
-   bar.innerText=`${Math.round(p)}% Completed`;
-}
-function bookmarked(title,yt_link,p1_link){
-    if (!bookmarks.some(q => q.title === title && q.yt_link === yt_link && q.p1_link===p1_link)) {
-        bookmarks.push({ title, yt_link,p1_link });
-        alert('Question bookmarked!');
-      } else {
-        alert('This question is already bookmarked.');
-      }
-}
-function bookmarkp(){
-    const List = document.getElementById('bookmarklist');
-       List.innerHTML = ''; 
-
-  if (bookmarks.length > 0) {
-    bookmarks.forEach(q => {
-      const bookmarkedItem = document.createElement('li');
-      bookmarkedItem.innerHTML = `<a class="nlink" href="${q.p1_link}" target="_blank">${q.title}</a> - <a class="link"href="${q.yt_link}" target="_blank">Watch Video</a>`;
-      List.appendChild(bookmarkedItem);
+        bookmarksList.appendChild(bookmarkItem);
     });
-  } else {
-    bookmarkedList.innerHTML = '<li>No bookmarks yet.</li>';
-  }
+    
+    // Add event listeners to remove buttons
+    document.querySelectorAll('.remove-bookmark').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            bookmarks.splice(index, 1);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            renderBookmarks();
+            
+            // Also update bookmark icons in questions list
+            updateBookmarkIcons();
+        });
+    });
 }
-document.getElementById('search').addEventListener('click',handlesearch);
-document.getElementById('bookmarkbtn').addEventListener('click',bookmarkp);
-document.getElementById('dk').addEventListener('click',function(){
-    var element = document.body;
 
-  element.classList.toggle("dark-mode");
-})
+function updateBookmarkIcons() {
+    document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        const title = btn.dataset.title;
+        const isBookmarked = bookmarks.some(b => b.title === title);
+        btn.innerHTML = `<i class="fas ${isBookmarked ? 'fa-bookmark' : 'fa-bookmark-o'}"></i>`;
+    });
+}
 
-window.onload= async function(){
+function toggleBookmarks() {
+    bookmarksList.classList.toggle('show');
+    bookmarksBtn.querySelector('.show-text').classList.toggle('hide');
+    bookmarksBtn.querySelector('.hide-text').classList.toggle('show');
+}
+
+function toggleDarkMode() {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', darkMode);
+}
+
+function updateProgress() {
+    const percentage = questions > 0 ? Math.round((completed / questions) * 100) : 0;
+    progressBar.style.width = `${percentage}%`;
+    progressBar.textContent = `${percentage}%`;
+    progressText.textContent = `${percentage}% Completed`;
+    progressCount.textContent = `${completed}/${questions} questions`;
+}
+
+function showAlert(message, type) {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
     
-        searching='';
-        try {
-            const response = await fetch(api);
-            const result = await response.json();
+    document.body.appendChild(alert);
     
-            if (result.status) {
-                const matched = [];
-                
-    
-                result.data.forEach(obj => {
-                    if (obj.title && obj.title.toLowerCase().includes(searching.toLowerCase())) {
-                         questions+=(obj.ques.length);
-                        
-                        matched.push(obj);
-                         
-                    }
-                });
-                const xx=document.getElementsByClassName("dropdown-content")[0];
-                matched.forEach(obj => {
-                    const p = document.createElement('p');
-                    p.innerHTML = obj.title;               
-                    xx.appendChild(p);         
-                });
-                
-    
-                // console.log('Matched Questions:', matched); 
-                console.log(questions);
-            }
-        } catch (error) {
-            console.log('Error:', error);
-        }
+    setTimeout(() => {
+        alert.classList.add('fade-out');
+        setTimeout(() => alert.remove(), 500);
+    }, 3000);
+}
+
+// Utility function to debounce search input
+function debounce(func, delay) {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
+// Add debounced search
+searchInput.addEventListener('input', debounce(function() {
+    if (this.value.trim().length >= 3) {
+        fetching(this.value);
     }
+}, 500));
